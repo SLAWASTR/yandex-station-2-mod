@@ -1,8 +1,8 @@
 #!/opt/bin/python3
 # -*- coding: utf-8 -*-
 """
-🎨 Yandex Station 2 — Pixel Grid LED Studio v3
-DOM Grid + Pointer Events (Mouse/Touch Drag) + Real-Time Sync + /dev/fb0 30 FPS Render Loop
+🎨 Yandex Station 2 — Pixel Grid Studio v4
+Dual Port (80 & 8080) + Bulletproof DOM Grid (height: 44px) + elementFromPoint Pointer Drag
 """
 
 import os
@@ -17,7 +17,6 @@ import random
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-PORT = 8080
 LED_COUNT = 89
 BYTES_PER_FRAME = LED_COUNT * 4  # 356 bytes
 
@@ -63,7 +62,7 @@ class LEDController:
                             ]))
                     self.fb_mm[:BYTES_PER_FRAME] = buf
                     try:
-                        fcntl.ioctl(self.fb_file.fileno(), 0x4606, self.fb_var)
+                        fcntl.ioctl(self.fb_file.fileno(), 0x4606, self.fb_var)  # FBIOPAN_DISPLAY
                     except Exception:
                         pass
             except Exception as e:
@@ -189,60 +188,41 @@ header p {
   padding: 16px;
   box-shadow: 0 8px 30px rgba(0,0,0,0.4);
 }
-/* GRID STYLES */
+/* GRID OF CELLS */
 .grid-container {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   gap: 6px;
   width: 100%;
   margin: 0 auto;
-  touch-action: none;
 }
 .led-cell {
-  aspect-ratio: 1 / 1;
+  height: 44px;
+  min-height: 44px;
   border-radius: 8px;
   background-color: #1a1e30;
   border: 1.5px solid #2d3450;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 11px;
   font-family: monospace;
-  color: #4b557c;
+  font-weight: 600;
+  color: #64748b;
   cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s;
-  position: relative;
+  transition: transform 0.05s, background-color 0.05s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 .led-cell:hover {
-  border-color: #fff;
   transform: scale(1.08);
+  border-color: #ffffff;
   z-index: 2;
 }
 .led-cell.active-color {
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 10px var(--glow-col);
 }
-/* CIRCLE PANEL VIEW */
-.canvas-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: 420px;
-  margin: 0 auto;
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-#ledCanvas {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, #181c2d 0%, #0d0f18 100%);
-  border: 2px solid #2e354e;
-  cursor: crosshair;
-}
-
 .palette-row {
   display: flex;
   flex-wrap: wrap;
@@ -285,7 +265,7 @@ input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
 input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 1px solid #fff; }
 .tool-btn-group {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin-bottom: 12px;
 }
@@ -361,17 +341,102 @@ input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 1px soli
 
 <header>
   <h1>🎨 Станция 2 — Pixel Grid Studio</h1>
-  <p>Интерактивная сетка 89 светодиодов (кликай и закрашивай)</p>
+  <p>Кликай по светодиодам или зажимай мышку и веди (89 диодов)</p>
 </header>
 
 <div class="main-container">
   <div class="panel-card">
-    <!-- GRID VIEW (DEFAULT) -->
-    <div class="grid-container" id="ledGrid"></div>
-    <!-- CIRCLE VIEW (OPTIONAL) -->
-    <div class="canvas-wrapper" id="canvasWrapper">
-      <canvas id="ledCanvas" width="420" height="420"></canvas>
-    </div>
+    <div class="grid-container" id="ledGrid">
+<button type="button" class="led-cell" id="c0" onclick="paintCell(0)" onmouseenter="if(isPointerDown)paintCell(0)">0</button>
+<button type="button" class="led-cell" id="c1" onclick="paintCell(1)" onmouseenter="if(isPointerDown)paintCell(1)">1</button>
+<button type="button" class="led-cell" id="c2" onclick="paintCell(2)" onmouseenter="if(isPointerDown)paintCell(2)">2</button>
+<button type="button" class="led-cell" id="c3" onclick="paintCell(3)" onmouseenter="if(isPointerDown)paintCell(3)">3</button>
+<button type="button" class="led-cell" id="c4" onclick="paintCell(4)" onmouseenter="if(isPointerDown)paintCell(4)">4</button>
+<button type="button" class="led-cell" id="c5" onclick="paintCell(5)" onmouseenter="if(isPointerDown)paintCell(5)">5</button>
+<button type="button" class="led-cell" id="c6" onclick="paintCell(6)" onmouseenter="if(isPointerDown)paintCell(6)">6</button>
+<button type="button" class="led-cell" id="c7" onclick="paintCell(7)" onmouseenter="if(isPointerDown)paintCell(7)">7</button>
+<button type="button" class="led-cell" id="c8" onclick="paintCell(8)" onmouseenter="if(isPointerDown)paintCell(8)">8</button>
+<button type="button" class="led-cell" id="c9" onclick="paintCell(9)" onmouseenter="if(isPointerDown)paintCell(9)">9</button>
+<button type="button" class="led-cell" id="c10" onclick="paintCell(10)" onmouseenter="if(isPointerDown)paintCell(10)">10</button>
+<button type="button" class="led-cell" id="c11" onclick="paintCell(11)" onmouseenter="if(isPointerDown)paintCell(11)">11</button>
+<button type="button" class="led-cell" id="c12" onclick="paintCell(12)" onmouseenter="if(isPointerDown)paintCell(12)">12</button>
+<button type="button" class="led-cell" id="c13" onclick="paintCell(13)" onmouseenter="if(isPointerDown)paintCell(13)">13</button>
+<button type="button" class="led-cell" id="c14" onclick="paintCell(14)" onmouseenter="if(isPointerDown)paintCell(14)">14</button>
+<button type="button" class="led-cell" id="c15" onclick="paintCell(15)" onmouseenter="if(isPointerDown)paintCell(15)">15</button>
+<button type="button" class="led-cell" id="c16" onclick="paintCell(16)" onmouseenter="if(isPointerDown)paintCell(16)">16</button>
+<button type="button" class="led-cell" id="c17" onclick="paintCell(17)" onmouseenter="if(isPointerDown)paintCell(17)">17</button>
+<button type="button" class="led-cell" id="c18" onclick="paintCell(18)" onmouseenter="if(isPointerDown)paintCell(18)">18</button>
+<button type="button" class="led-cell" id="c19" onclick="paintCell(19)" onmouseenter="if(isPointerDown)paintCell(19)">19</button>
+<button type="button" class="led-cell" id="c20" onclick="paintCell(20)" onmouseenter="if(isPointerDown)paintCell(20)">20</button>
+<button type="button" class="led-cell" id="c21" onclick="paintCell(21)" onmouseenter="if(isPointerDown)paintCell(21)">21</button>
+<button type="button" class="led-cell" id="c22" onclick="paintCell(22)" onmouseenter="if(isPointerDown)paintCell(22)">22</button>
+<button type="button" class="led-cell" id="c23" onclick="paintCell(23)" onmouseenter="if(isPointerDown)paintCell(23)">23</button>
+<button type="button" class="led-cell" id="c24" onclick="paintCell(24)" onmouseenter="if(isPointerDown)paintCell(24)">24</button>
+<button type="button" class="led-cell" id="c25" onclick="paintCell(25)" onmouseenter="if(isPointerDown)paintCell(25)">25</button>
+<button type="button" class="led-cell" id="c26" onclick="paintCell(26)" onmouseenter="if(isPointerDown)paintCell(26)">26</button>
+<button type="button" class="led-cell" id="c27" onclick="paintCell(27)" onmouseenter="if(isPointerDown)paintCell(27)">27</button>
+<button type="button" class="led-cell" id="c28" onclick="paintCell(28)" onmouseenter="if(isPointerDown)paintCell(28)">28</button>
+<button type="button" class="led-cell" id="c29" onclick="paintCell(29)" onmouseenter="if(isPointerDown)paintCell(29)">29</button>
+<button type="button" class="led-cell" id="c30" onclick="paintCell(30)" onmouseenter="if(isPointerDown)paintCell(30)">30</button>
+<button type="button" class="led-cell" id="c31" onclick="paintCell(31)" onmouseenter="if(isPointerDown)paintCell(31)">31</button>
+<button type="button" class="led-cell" id="c32" onclick="paintCell(32)" onmouseenter="if(isPointerDown)paintCell(32)">32</button>
+<button type="button" class="led-cell" id="c33" onclick="paintCell(33)" onmouseenter="if(isPointerDown)paintCell(33)">33</button>
+<button type="button" class="led-cell" id="c34" onclick="paintCell(34)" onmouseenter="if(isPointerDown)paintCell(34)">34</button>
+<button type="button" class="led-cell" id="c35" onclick="paintCell(35)" onmouseenter="if(isPointerDown)paintCell(35)">35</button>
+<button type="button" class="led-cell" id="c36" onclick="paintCell(36)" onmouseenter="if(isPointerDown)paintCell(36)">36</button>
+<button type="button" class="led-cell" id="c37" onclick="paintCell(37)" onmouseenter="if(isPointerDown)paintCell(37)">37</button>
+<button type="button" class="led-cell" id="c38" onclick="paintCell(38)" onmouseenter="if(isPointerDown)paintCell(38)">38</button>
+<button type="button" class="led-cell" id="c39" onclick="paintCell(39)" onmouseenter="if(isPointerDown)paintCell(39)">39</button>
+<button type="button" class="led-cell" id="c40" onclick="paintCell(40)" onmouseenter="if(isPointerDown)paintCell(40)">40</button>
+<button type="button" class="led-cell" id="c41" onclick="paintCell(41)" onmouseenter="if(isPointerDown)paintCell(41)">41</button>
+<button type="button" class="led-cell" id="c42" onclick="paintCell(42)" onmouseenter="if(isPointerDown)paintCell(42)">42</button>
+<button type="button" class="led-cell" id="c43" onclick="paintCell(43)" onmouseenter="if(isPointerDown)paintCell(43)">43</button>
+<button type="button" class="led-cell" id="c44" onclick="paintCell(44)" onmouseenter="if(isPointerDown)paintCell(44)">44</button>
+<button type="button" class="led-cell" id="c45" onclick="paintCell(45)" onmouseenter="if(isPointerDown)paintCell(45)">45</button>
+<button type="button" class="led-cell" id="c46" onclick="paintCell(46)" onmouseenter="if(isPointerDown)paintCell(46)">46</button>
+<button type="button" class="led-cell" id="c47" onclick="paintCell(47)" onmouseenter="if(isPointerDown)paintCell(47)">47</button>
+<button type="button" class="led-cell" id="c48" onclick="paintCell(48)" onmouseenter="if(isPointerDown)paintCell(48)">48</button>
+<button type="button" class="led-cell" id="c49" onclick="paintCell(49)" onmouseenter="if(isPointerDown)paintCell(49)">49</button>
+<button type="button" class="led-cell" id="c50" onclick="paintCell(50)" onmouseenter="if(isPointerDown)paintCell(50)">50</button>
+<button type="button" class="led-cell" id="c51" onclick="paintCell(51)" onmouseenter="if(isPointerDown)paintCell(51)">51</button>
+<button type="button" class="led-cell" id="c52" onclick="paintCell(52)" onmouseenter="if(isPointerDown)paintCell(52)">52</button>
+<button type="button" class="led-cell" id="c53" onclick="paintCell(53)" onmouseenter="if(isPointerDown)paintCell(53)">53</button>
+<button type="button" class="led-cell" id="c54" onclick="paintCell(54)" onmouseenter="if(isPointerDown)paintCell(54)">54</button>
+<button type="button" class="led-cell" id="c55" onclick="paintCell(55)" onmouseenter="if(isPointerDown)paintCell(55)">55</button>
+<button type="button" class="led-cell" id="c56" onclick="paintCell(56)" onmouseenter="if(isPointerDown)paintCell(56)">56</button>
+<button type="button" class="led-cell" id="c57" onclick="paintCell(57)" onmouseenter="if(isPointerDown)paintCell(57)">57</button>
+<button type="button" class="led-cell" id="c58" onclick="paintCell(58)" onmouseenter="if(isPointerDown)paintCell(58)">58</button>
+<button type="button" class="led-cell" id="c59" onclick="paintCell(59)" onmouseenter="if(isPointerDown)paintCell(59)">59</button>
+<button type="button" class="led-cell" id="c60" onclick="paintCell(60)" onmouseenter="if(isPointerDown)paintCell(60)">60</button>
+<button type="button" class="led-cell" id="c61" onclick="paintCell(61)" onmouseenter="if(isPointerDown)paintCell(61)">61</button>
+<button type="button" class="led-cell" id="c62" onclick="paintCell(62)" onmouseenter="if(isPointerDown)paintCell(62)">62</button>
+<button type="button" class="led-cell" id="c63" onclick="paintCell(63)" onmouseenter="if(isPointerDown)paintCell(63)">63</button>
+<button type="button" class="led-cell" id="c64" onclick="paintCell(64)" onmouseenter="if(isPointerDown)paintCell(64)">64</button>
+<button type="button" class="led-cell" id="c65" onclick="paintCell(65)" onmouseenter="if(isPointerDown)paintCell(65)">65</button>
+<button type="button" class="led-cell" id="c66" onclick="paintCell(66)" onmouseenter="if(isPointerDown)paintCell(66)">66</button>
+<button type="button" class="led-cell" id="c67" onclick="paintCell(67)" onmouseenter="if(isPointerDown)paintCell(67)">67</button>
+<button type="button" class="led-cell" id="c68" onclick="paintCell(68)" onmouseenter="if(isPointerDown)paintCell(68)">68</button>
+<button type="button" class="led-cell" id="c69" onclick="paintCell(69)" onmouseenter="if(isPointerDown)paintCell(69)">69</button>
+<button type="button" class="led-cell" id="c70" onclick="paintCell(70)" onmouseenter="if(isPointerDown)paintCell(70)">70</button>
+<button type="button" class="led-cell" id="c71" onclick="paintCell(71)" onmouseenter="if(isPointerDown)paintCell(71)">71</button>
+<button type="button" class="led-cell" id="c72" onclick="paintCell(72)" onmouseenter="if(isPointerDown)paintCell(72)">72</button>
+<button type="button" class="led-cell" id="c73" onclick="paintCell(73)" onmouseenter="if(isPointerDown)paintCell(73)">73</button>
+<button type="button" class="led-cell" id="c74" onclick="paintCell(74)" onmouseenter="if(isPointerDown)paintCell(74)">74</button>
+<button type="button" class="led-cell" id="c75" onclick="paintCell(75)" onmouseenter="if(isPointerDown)paintCell(75)">75</button>
+<button type="button" class="led-cell" id="c76" onclick="paintCell(76)" onmouseenter="if(isPointerDown)paintCell(76)">76</button>
+<button type="button" class="led-cell" id="c77" onclick="paintCell(77)" onmouseenter="if(isPointerDown)paintCell(77)">77</button>
+<button type="button" class="led-cell" id="c78" onclick="paintCell(78)" onmouseenter="if(isPointerDown)paintCell(78)">78</button>
+<button type="button" class="led-cell" id="c79" onclick="paintCell(79)" onmouseenter="if(isPointerDown)paintCell(79)">79</button>
+<button type="button" class="led-cell" id="c80" onclick="paintCell(80)" onmouseenter="if(isPointerDown)paintCell(80)">80</button>
+<button type="button" class="led-cell" id="c81" onclick="paintCell(81)" onmouseenter="if(isPointerDown)paintCell(81)">81</button>
+<button type="button" class="led-cell" id="c82" onclick="paintCell(82)" onmouseenter="if(isPointerDown)paintCell(82)">82</button>
+<button type="button" class="led-cell" id="c83" onclick="paintCell(83)" onmouseenter="if(isPointerDown)paintCell(83)">83</button>
+<button type="button" class="led-cell" id="c84" onclick="paintCell(84)" onmouseenter="if(isPointerDown)paintCell(84)">84</button>
+<button type="button" class="led-cell" id="c85" onclick="paintCell(85)" onmouseenter="if(isPointerDown)paintCell(85)">85</button>
+<button type="button" class="led-cell" id="c86" onclick="paintCell(86)" onmouseenter="if(isPointerDown)paintCell(86)">86</button>
+<button type="button" class="led-cell" id="c87" onclick="paintCell(87)" onmouseenter="if(isPointerDown)paintCell(87)">87</button>
+<button type="button" class="led-cell" id="c88" onclick="paintCell(88)" onmouseenter="if(isPointerDown)paintCell(88)">88</button>
+</div>
   </div>
 
   <div class="panel-card">
@@ -406,8 +471,7 @@ input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 1px soli
     <div class="tool-btn-group">
       <button class="btn" id="btnFill">🪣 Залить всё</button>
       <button class="btn danger" id="btnClear">🧹 Очистить</button>
-      <button class="btn" id="btnToggleView">🔄 Круг / Сетка</button>
-      <button class="btn" id="btnExport">💾 Скачать</button>
+      <button class="btn" id="btnExport">💾 Скачать .led</button>
     </div>
 
     <div class="fx-title">Эффекты</div>
@@ -420,7 +484,7 @@ input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 1px soli
 
     <div class="status-bar">
       <div class="status-dot"></div>
-      <span id="statusText">Подключено (30 FPS Hardware Loop)</span>
+      <span id="statusText">Подключено (Live 30 FPS Loop)</span>
     </div>
   </div>
 </div>
@@ -428,48 +492,25 @@ input[type="color"]::-webkit-color-swatch { border-radius: 50%; border: 1px soli
 <script>
 const TOTAL_LEDS = 89;
 const gridContainer = document.getElementById('ledGrid');
-const canvasWrapper = document.getElementById('canvasWrapper');
-const canvas = document.getElementById('ledCanvas');
-const ctx = canvas.getContext('2d');
 
 let currentColor = '#ff0033';
 let brightnessPct = 1.0;
 let whiteIntensity = 0;
 let isPointerDown = false;
-let currentView = 'grid'; // 'grid' or 'circle'
 
 const ledState = Array.from({length: TOTAL_LEDS}, () => ({r: 0, g: 0, b: 0, w: 0}));
 const gridCells = [];
 
-// Build Grid DOM elements
+// Populate 89 grid cells
 for (let i = 0; i < TOTAL_LEDS; i++) {
   const cell = document.createElement('div');
   cell.className = 'led-cell';
   cell.id = `led-cell-${i}`;
   cell.dataset.idx = i;
   cell.innerText = i;
-  
-  // Pointer down (start drag)
-  cell.addEventListener('pointerdown', (e) => {
-    isPointerDown = true;
-    cell.releasePointerCapture(e.pointerId);
-    paintCell(i);
-  });
-  
-  // Pointer enter (during drag)
-  cell.addEventListener('pointerenter', () => {
-    if (isPointerDown) {
-      paintCell(i);
-    }
-  });
-
   gridContainer.appendChild(cell);
   gridCells.push(cell);
 }
-
-// Global pointer up
-window.addEventListener('pointerup', () => { isPointerDown = false; });
-window.addEventListener('pointercancel', () => { isPointerDown = false; });
 
 function hexToRgb(hex) {
   const bigint = parseInt(hex.slice(1), 16);
@@ -481,10 +522,10 @@ function hexToRgb(hex) {
 }
 
 function paintCell(idx) {
+  if (idx < 0 || idx >= TOTAL_LEDS) return;
   const rgb = hexToRgb(currentColor);
   ledState[idx] = { r: rgb.r, g: rgb.g, b: rgb.b, w: parseInt(whiteIntensity) };
   
-  // Update Cell UI
   const cell = gridCells[idx];
   const hasColor = rgb.r > 0 || rgb.g > 0 || rgb.b > 0 || whiteIntensity > 0;
   if (hasColor) {
@@ -498,6 +539,31 @@ function paintCell(idx) {
 
   syncToStation();
 }
+
+function checkAndPaint(e) {
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if (el && el.classList && el.classList.contains('led-cell')) {
+    const idx = parseInt(el.dataset.idx);
+    if (!isNaN(idx)) {
+      paintCell(idx);
+    }
+  }
+}
+
+// Global Drag & Click listeners using elementFromPoint
+window.addEventListener('pointerdown', (e) => {
+  isPointerDown = true;
+  checkAndPaint(e);
+});
+
+window.addEventListener('pointermove', (e) => {
+  if (isPointerDown) {
+    checkAndPaint(e);
+  }
+});
+
+window.addEventListener('pointerup', () => { isPointerDown = false; });
+window.addEventListener('pointercancel', () => { isPointerDown = false; });
 
 let syncTimeout = null;
 function syncToStation(immediate = false) {
@@ -566,72 +632,6 @@ document.getElementById('btnFill').addEventListener('click', () => {
   syncToStation(true);
 });
 
-document.getElementById('btnToggleView').addEventListener('click', () => {
-  if (currentView === 'grid') {
-    currentView = 'circle';
-    gridContainer.style.display = 'none';
-    canvasWrapper.style.display = 'flex';
-    renderCircleCanvas();
-  } else {
-    currentView = 'grid';
-    gridContainer.style.display = 'grid';
-    canvasWrapper.style.display = 'none';
-  }
-});
-
-// Circle render support
-function renderCircleCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  const cx = 210, cy = 210;
-  // Outer ring: 34
-  for (let i = 0; i < 34; i++) {
-    const angle = (i / 34) * Math.PI * 2 - Math.PI / 2;
-    const x = cx + 165 * Math.cos(angle);
-    const y = cy + 165 * Math.sin(angle);
-    drawCircleLed(i, x, y, 9);
-  }
-  // Ring 2: 24
-  for (let i = 0; i < 24; i++) {
-    const angle = (i / 24) * Math.PI * 2 - Math.PI / 2;
-    const x = cx + 118 * Math.cos(angle);
-    const y = cy + 118 * Math.sin(angle);
-    drawCircleLed(34 + i, x, y, 8.5);
-  }
-  // Ring 3: 18
-  for (let i = 0; i < 18; i++) {
-    const angle = (i / 18) * Math.PI * 2 - Math.PI / 2;
-    const x = cx + 74 * Math.cos(angle);
-    const y = cy + 74 * Math.sin(angle);
-    drawCircleLed(58 + i, x, y, 8);
-  }
-  // Ring 4: 12
-  for (let i = 0; i < 12; i++) {
-    const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
-    const x = cx + 36 * Math.cos(angle);
-    const y = cy + 36 * Math.sin(angle);
-    drawCircleLed(76 + i, x, y, 7);
-  }
-  // Center
-  drawCircleLed(88, cx, cy, 8);
-}
-
-function drawCircleLed(i, x, y, rad) {
-  const s = ledState[i];
-  const hasColor = s.r > 0 || s.g > 0 || s.b > 0 || s.w > 0;
-  ctx.beginPath();
-  ctx.arc(x, y, rad, 0, Math.PI * 2);
-  ctx.fillStyle = hasColor ? `rgb(${s.r}, ${s.g}, ${s.b})` : '#161926';
-  ctx.fill();
-  ctx.lineWidth = 1.5;
-  ctx.strokeStyle = hasColor ? '#ffffff88' : '#272d42';
-  ctx.stroke();
-  ctx.fillStyle = hasColor ? '#fff' : '#3d4766';
-  ctx.font = '7.5px monospace';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(i, x, y);
-}
-
 document.getElementById('btnExport').addEventListener('click', () => {
   let hexLine = "";
   for (let i = 0; i < TOTAL_LEDS; i++) {
@@ -671,6 +671,8 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Connection", "close")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
         self.send_cors_headers()
         self.end_headers()
         self.wfile.write(data)
@@ -679,6 +681,8 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Length", "0")
         self.send_header("Connection", "close")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+        self.send_header("Pragma", "no-cache")
         self.send_cors_headers()
         self.end_headers()
 
@@ -696,7 +700,19 @@ class RequestHandler(BaseHTTPRequestHandler):
         content_len = int(self.headers.get("Content-Length", 0))
         post_body = self.rfile.read(content_len) if content_len > 0 else b""
 
-        if self.path == "/api/frame":
+        if self.path == "/api/pixel":
+            try:
+                data = json.loads(post_body.decode("utf-8"))
+                idx = int(data.get("index", -1))
+                col = data.get("color", "#ff0000").lstrip("#")
+                r = int(col[0:2], 16) if len(col) >= 2 else 0
+                g = int(col[2:4], 16) if len(col) >= 4 else 0
+                b = int(col[4:6], 16) if len(col) >= 6 else 0
+                controller.set_pixel(idx, r, g, b, 0)
+                self.reply_data(b"OK")
+            except Exception as e:
+                self.reply_data(f"Error: {e}".encode("utf-8"), code=400)
+        elif self.path == "/api/frame":
             try:
                 frame_data = json.loads(post_body.decode("utf-8"))
                 controller.set_frame(frame_data)
@@ -718,16 +734,21 @@ class RequestHandler(BaseHTTPRequestHandler):
         else:
             self.reply_data(b"Not Found", code=404)
 
-def main():
-    print(f"[*] LED Studio v3 starting on port {PORT}...")
-    server = HTTPServer(("0.0.0.0", PORT), RequestHandler)
+def run_server(port):
     try:
+        server = HTTPServer(("0.0.0.0", port), RequestHandler)
+        print(f"[*] LED Studio Server started on port {port}")
         server.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        controller.running = False
-        controller.clear()
+    except Exception as e:
+        print(f"[!] Server error on port {port}: {e}")
+
+def main():
+    # Start on port 80 and port 8080!
+    t1 = threading.Thread(target=run_server, args=(80,), daemon=True)
+    t1.start()
+    
+    # Main on 8080
+    run_server(8080)
 
 if __name__ == "__main__":
     main()
