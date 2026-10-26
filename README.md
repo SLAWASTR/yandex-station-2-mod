@@ -1,6 +1,6 @@
-# 🚀 Яндекс Станция 2 / Миди (YNDX-00051) — Ultimate Mod & Guide
+# 🚀 Яндекс Станция 2 — Ultimate Mod & Guide
 
-> **Полный комплекс модификации Станции Миди:**  
+> **Полный комплекс модификации Яндекс Станции 2 (YNDX-00051 / Станция 2 / Миди на Amlogic AXG):**  
 > Получение вечного Root без разборки, блокировка автообновлений, постоянный Dropbear SSH, Apple AirPlay, нативный Spotify Connect с PlayPlay DRM, аппаратные сенсорные кнопки и двусторонняя синхронизация громкости с Алисой.
 
 ---
@@ -40,17 +40,17 @@
 
 ```bash
 # 1. Склонируйте репозиторий на компьютер
-git clone https://github.com/ВАШ_АККАУНТ/yandex-station-midi-mod.git
-cd yandex-station-midi-mod
+git clone https://github.com/ВАШ_АККАУНТ/yandex-station-2-mod.git
+cd yandex-station-2-mod
 
 # 2. Скопируйте установочные скрипты на колонку
-adb -s <IP_КОЛОНКИ>:5555 push scripts /tmp/midi_scripts
+adb -s <IP_КОЛОНКИ>:5555 push scripts /tmp/station2_scripts
 
 # 3. Запустите автоматическую установку
-adb -s <IP_КОЛОНКИ>:5555 shell "sh /tmp/midi_scripts/install-all.sh"
+adb -s <IP_КОЛОНКИ>:5555 shell "sh /tmp/station2_scripts/install-all.sh"
 
 # 4. Удалите временные файлы
-adb -s <IP_КОЛОНКИ>:5555 shell "rm -rf /tmp/midi_scripts"
+adb -s <IP_КОЛОНКИ>:5555 shell "rm -rf /tmp/station2_scripts"
 ```
 
 Скрипт автоматически проверит архитектуру, смонтирует файловую систему, пропишет автозапуск всех служб, скачает и скомпилирует недостающие зависимости, после чего перезапустит плеер.
