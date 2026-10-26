@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+SPOTIFY_DIR=/data/opt/spotify-connect
+case "${1:-}" in
+    start)
+        [ ! -x "$SPOTIFY_DIR/start.sh" ] || "$SPOTIFY_DIR/start.sh"
+        ;;
+    stop)
+        [ ! -x "$SPOTIFY_DIR/stop.sh" ] || "$SPOTIFY_DIR/stop.sh"
+        ;;
+    restart)
+        "$0" stop
+        "$0" start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}" >&2
+        exit 1
+        ;;
+esac

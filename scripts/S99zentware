@@ -1,0 +1,14 @@
+#!/bin/sh
+case "$1" in
+  start)
+    for i in $(seq 1 15); do
+      [ -x /opt/etc/init.d/rc.unslung ] && break
+      sleep 1
+    done
+    [ -x /opt/etc/init.d/rc.unslung ] && /opt/etc/init.d/rc.unslung start
+    ;;
+  stop)
+    [ -x /opt/etc/init.d/rc.unslung ] && /opt/etc/init.d/rc.unslung stop
+    ;;
+esac
+exit 0

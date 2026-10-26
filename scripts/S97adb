@@ -1,0 +1,11 @@
+#!/bin/sh
+start() {
+  pidof adbd >/dev/null 2>&1 && return 0
+  /usr/bin/adb.sh stop 2>/dev/null
+  start-stop-daemon -S -b -x /usr/bin/adbd 2>/dev/null || start-stop-daemon -S -b -x adbd
+}
+case "$1" in
+  start) start ;;
+  stop) killall adbd 2>/dev/null ;;
+esac
+exit 0
