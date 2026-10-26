@@ -27,7 +27,7 @@ class DesktopLEDStudio:
         self.brightness = 1.0
         self.white_val = 0
         self.is_painting = False
-        self.layout_mode = "circle"  # "circle" or "grid"
+        self.layout_mode = "grid"  # Default to Grid as requested!
         self.sync_job = None
 
         # State: 89 LEDs [R, G, B, W]
@@ -205,12 +205,14 @@ class DesktopLEDStudio:
             # Center: 1 LED
             self.positions.append((cx, cy, 8))
         else:
-            # 10 x 9 Grid
+            # 10 x 9 Grid of large clickable LED cells
             cols = 10
             for i in range(TOTAL_LEDS):
                 r = i // cols
                 c = i % cols
-                self.positions.append((40 + c * 40, 40 + r * 44, 12))
+                x = 35 + c * 41
+                y = 35 + r * 45
+                self.positions.append((x, y, 17))
 
     def draw_canvas(self):
         self.canvas.delete("all")
