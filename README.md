@@ -40,7 +40,7 @@
 
 ```bash
 # 1. Склонируйте репозиторий на компьютер
-git clone https://github.com/ВАШ_АККАУНТ/yandex-station-2-mod.git
+git clone https://github.com/SLAWASTR/yandex-station-2-mod.git
 cd yandex-station-2-mod
 
 # 2. Скопируйте установочные скрипты на колонку
